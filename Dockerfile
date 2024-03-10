@@ -16,5 +16,5 @@ RUN poetry install --no-root --no-interaction --no-ansi
 
 COPY . .
 
-
+RUN chmod a+x docker_script/*.sh
 
