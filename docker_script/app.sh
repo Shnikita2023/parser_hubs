@@ -2,7 +2,7 @@
 
 sleep 10
 
-cd /habs_parser/src
+cd src
 
 python manage.py migrate
 python manage.py loaddata fixtures/hubs/data.json
