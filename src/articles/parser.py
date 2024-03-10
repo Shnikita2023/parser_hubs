@@ -27,15 +27,18 @@ class ArticlesManager:
     async def fetch_data_article(self, url: str, semaphore: Semaphore, model_hub: Hub) -> None:
         async with semaphore:
             response_html: Optional[str] = await self.http_client.get(url=url)
-            soup: BeautifulSoup = BeautifulSoup(response_html, "html.parser")
-            title: str = soup.find("h1", class_="tm-title tm-title_h1").text.strip()
-            date: str = soup.find("span", class_="tm-article-datetime-published").text.strip()
-            content: str = soup.find("div", class_="tm-article-body").text.strip()
-            author_name: str = soup.find("a", class_="tm-user-info__username").text.strip()
-            author_link: str = soup.find("a", class_="tm-user-info__username").get("href")
-            await article_service.add_article(title, date, content, author_name, author_link, url, model_hub)
-            print(f"Название статьи: {title}, Дата публикации: {date}, Ссылка на пост: {url}"
-                  f" Автор: {author_name}, Ссылка на автора: {self.URL_HABR}{author_link}")
+            if response_html:
+                soup: BeautifulSoup = BeautifulSoup(response_html, "html.parser")
+                title: str = soup.find("h1", class_="tm-title tm-title_h1").text.strip()
+                date: str = soup.find("span", class_="tm-article-datetime-published").text.strip()
+                content: str = soup.find("div", class_="tm-article-body").text.strip()
+                author_name: str = soup.find("a", class_="tm-user-info__username").text.strip()
+                author_link: str = soup.find("a", class_="tm-user-info__username").get("href")
+                await article_service.add_article(title, date, content, author_name, author_link, url, model_hub)
+                print(f"Название статьи: {title}, Дата публикации: {date}, Ссылка на пост: {url}"
+                      f" Автор: {author_name}, Ссылка на автора: {self.URL_HABR}{author_link}")
+
+            return None
 
     async def get_url_articles(self) -> None:
         logger.info("Ожидайте идёт процесс парсинга...")
