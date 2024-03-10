@@ -1,0 +1,26 @@
+[
+{
+  "model": "hubs.hub",
+  "pk": 3,
+  "fields": {
+    "title": "infosecurity",
+    "hub_link": "https://habr.com/ru/hubs/infosecurity/articles/"
+  }
+},
+{
+  "model": "hubs.hub",
+  "pk": 4,
+  "fields": {
+    "title": "python",
+    "hub_link": "https://habr.com/ru/hubs/python/articles/"
+  }
+},
+{
+  "model": "hubs.hub",
+  "pk": 5,
+  "fields": {
+    "title": "programming",
+    "hub_link": "https://habr.com/ru/hubs/programming/articles/"
+  }
+}
+]

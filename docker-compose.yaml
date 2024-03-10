@@ -1,0 +1,86 @@
+version: '3.9'
+
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: "app_parser"
+    ports:
+      - "8001:8000"
+    env_file:
+      - .env
+    command: ["sh", "./docker_script/app.sh"]
+    depends_on:
+      - database
+      - redis_app
+    networks:
+      - custom
+
+  database:
+    image: postgres:latest
+    restart: always
+    container_name: "database_parser"
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    ports:
+      - "5470:5432"
+    networks:
+      - custom
+
+  redis_app:
+    image: redis:latest
+    restart: always
+    env_file:
+      - .env
+    container_name: "redis_parser"
+    ports:
+      - "6000:6379"
+    networks:
+      - custom
+
+  worker_celery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: "worker_parser"
+    depends_on:
+      - app
+    command: ["sh", "-c", "cd src && celery -A app.celery:app worker --loglevel=info"]
+    env_file:
+      - .env
+    networks:
+      - custom
+
+  beat_celery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: "beat_parser"
+    depends_on:
+      - worker_celery
+    command: ["sh", "-c", "cd src && celery -A app.celery:app beat --loglevel=info"]
+    env_file:
+      - .env
+    networks:
+      - custom
+
+  flower:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: "flower_parser"
+    depends_on:
+      - worker_celery
+    ports:
+      - "5556:5555"
+    command: ["sh", "-c", "cd src && celery -A app.celery:app flower"]
+    networks:
+      - custom
+
+networks:
+  custom:
+    driver: bridge
