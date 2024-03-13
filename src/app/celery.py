@@ -11,7 +11,7 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'run-every-10-minutes': {
         'task': 'articles.tasks.start_parser_task',
-        'schedule': timedelta(minutes=10),
+        'schedule': timedelta(minutes=1),
     },
 }
 

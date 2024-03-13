@@ -3,7 +3,7 @@ from django.db import models
 
 class Article(models.Model):
     title = models.CharField(unique=True, db_index=True, verbose_name="Заголовок")
-    date = models.CharField(verbose_name="Дата публикации")
+    date = models.DateTimeField(verbose_name="Дата публикации")
     author_name = models.CharField(verbose_name="Имя автора")
     content = models.TextField(verbose_name="Текст статьи")
     author_link = models.CharField(verbose_name="Ссылка на автора")

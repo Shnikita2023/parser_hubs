@@ -1,5 +1,6 @@
 import asyncio
 from asyncio import Semaphore
+from datetime import datetime
 from typing import Any, Generator, Optional
 
 from bs4 import BeautifulSoup
@@ -10,6 +11,7 @@ from http_client.http_client_interface import HTTPClientInterface
 from hubs.models import Hub
 from hubs.services import hub_service
 from logging_config import MyLogger
+from parsers.utils import convert_stroka_with_datetime
 
 logger = MyLogger(pathname=__name__).init_logger
 
@@ -28,13 +30,14 @@ class ArticlesManager:
         async with semaphore:
             response_html: Optional[str] = await self.http_client.get(url=url)
             if response_html:
-                soup: BeautifulSoup = BeautifulSoup(response_html, "html.parsers")
+                soup: BeautifulSoup = BeautifulSoup(response_html, "html.parser")
                 title: str = soup.find("h1", class_="tm-title tm-title_h1").text.strip()
                 date: str = soup.find("span", class_="tm-article-datetime-published").text.strip()
                 content: str = soup.find("div", class_="tm-article-body").text.strip()
                 author_name: str = soup.find("a", class_="tm-user-info__username").text.strip()
-                author_link: str = soup.find("a", class_="tm-user-info__username").get("href")
-                await article_service.add_article(title, date, content, author_name, author_link, url, model_hub)
+                author_link: str = self.URL_HABR + soup.find("a", class_="tm-user-info__username").get("href")
+                date_time: datetime = await convert_stroka_with_datetime(date_str=date)
+                await article_service.add_article(title, date_time, content, author_name, author_link, url, model_hub)
                 print(f"Название статьи: {title}, Дата публикации: {date}, Ссылка на пост: {url}"
                       f" Автор: {author_name}, Ссылка на автора: {self.URL_HABR}{author_link}")
 
@@ -45,7 +48,7 @@ class ArticlesManager:
         models_hubs: list[Hub] = await hub_service.get_hubs()
         for hub in models_hubs:
             response_html: Optional[str] = await self.http_client.get(url=hub.hub_link)
-            soup: BeautifulSoup = BeautifulSoup(response_html, 'html.parsers')
+            soup: BeautifulSoup = BeautifulSoup(response_html, 'html.parser')
             article_links: Generator[str, Any, None] = (self.URL_HABR + a.get('href') for a in
                                                         soup.find_all('a', class_='tm-title__link'))
             await self.create_tasks(model_hub=hub, article_links=article_links)
@@ -63,3 +66,4 @@ class ArticlesManager:
 
 client: AiohttpClient = AiohttpClient()
 articles_manager: ArticlesManager = ArticlesManager(client)
+

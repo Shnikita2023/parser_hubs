@@ -1,7 +1,7 @@
 from asgiref.sync import async_to_sync
 
 from app.celery import app
-from parser.parser_articles import articles_manager
+from parsers.parser_articles import articles_manager
 
 
 @app.task()

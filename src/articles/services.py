@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, Any
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -17,7 +18,7 @@ class ArticleService:
     @classmethod
     async def add_article(cls,
                           title: str,
-                          date: str,
+                          date: datetime,
                           content: str,
                           author_name: str,
                           author_link: str,
