@@ -28,7 +28,7 @@ class ArticlesManager:
         async with semaphore:
             response_html: Optional[str] = await self.http_client.get(url=url)
             if response_html:
-                soup: BeautifulSoup = BeautifulSoup(response_html, "html.parser")
+                soup: BeautifulSoup = BeautifulSoup(response_html, "html.parsers")
                 title: str = soup.find("h1", class_="tm-title tm-title_h1").text.strip()
                 date: str = soup.find("span", class_="tm-article-datetime-published").text.strip()
                 content: str = soup.find("div", class_="tm-article-body").text.strip()
@@ -45,7 +45,7 @@ class ArticlesManager:
         models_hubs: list[Hub] = await hub_service.get_hubs()
         for hub in models_hubs:
             response_html: Optional[str] = await self.http_client.get(url=hub.hub_link)
-            soup: BeautifulSoup = BeautifulSoup(response_html, 'html.parser')
+            soup: BeautifulSoup = BeautifulSoup(response_html, 'html.parsers')
             article_links: Generator[str, Any, None] = (self.URL_HABR + a.get('href') for a in
                                                         soup.find_all('a', class_='tm-title__link'))
             await self.create_tasks(model_hub=hub, article_links=article_links)

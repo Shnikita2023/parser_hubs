@@ -6,7 +6,7 @@ class MyLogger:
     def __init__(self,
                  pathname: str = '',
                  name_logger: str = "parser_logger",
-                 filename: str = "parser.log"):
+                 filename: str = "parsers.log"):
         self.pathname = pathname
         self.logger = logging.getLogger(name_logger)
         self.filename = filename

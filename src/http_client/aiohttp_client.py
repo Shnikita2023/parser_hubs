@@ -13,7 +13,7 @@ class AiohttpClient(HTTPClientInterface):
     async def get(self, url: str) -> Optional[str]:
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(url) as response:
+                async with session.get(url, timeout=10) as response:
 
                     if response.status != 200:
                         raise aiohttp.ClientError(f"Ошибка при получении данных: Status {response.status}")
@@ -22,6 +22,11 @@ class AiohttpClient(HTTPClientInterface):
 
             return html
 
+        except aiohttp.ClientTimeout as ex:
+            logger.critical(msg=f"Превышено время ожидания при выполнении запроса: {ex}")
+
         except aiohttp.ClientError as ex:
             logger.critical(msg=f"Что-то пошло не так, попробуйте позже: {ex}")
+
+
 
