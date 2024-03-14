@@ -11,7 +11,7 @@ from http_client.http_client_interface import HTTPClientInterface
 from hubs.models import Hub
 from hubs.services import hub_service
 from logging_config import MyLogger
-from parsers.utils import convert_stroka_with_datetime
+from parsers.utils import DateTimeConverter
 
 logger = MyLogger(pathname=__name__).init_logger
 
@@ -36,7 +36,7 @@ class ArticlesManager:
                 content: str = soup.find("div", class_="tm-article-body").text.strip()
                 author_name: str = soup.find("a", class_="tm-user-info__username").text.strip()
                 author_link: str = self.URL_HABR + soup.find("a", class_="tm-user-info__username").get("href")
-                date_time: datetime = await convert_stroka_with_datetime(date_str=date)
+                date_time: datetime = await DateTimeConverter(date_str=date).convert_stroka_with_datetime()
                 await article_service.add_article(title, date_time, content, author_name, author_link, url, model_hub)
                 print(f"Название статьи: {title}, Дата публикации: {date}, Ссылка на пост: {url}"
                       f" Автор: {author_name}, Ссылка на автора: {self.URL_HABR}{author_link}")
